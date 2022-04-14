@@ -1,17 +1,58 @@
 import { isSameHour } from "date-fns";
 import Head from "next/head";
-import { useState } from "react";
-import { round } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { round, debounce } from "lodash";
 
 const Home = ({ price }: { price: number }) => {
   const [petrol, setPetrol] = useState(14.5);
   const [batterySize, setBatterySize] = useState(10);
   const [electricDistance, setElectricDistance] = useState(30);
-  const kmkwh = electricDistance / batterySize;
   const [liter, setLiter] = useState(11.6);
+  const [isSaving, setIsSaving] = useState(false);
+  const kmkwh = electricDistance / batterySize;
   const electricPrice = round(price / kmkwh, 2);
   const petrolPrice = round(petrol / liter, 2);
   const shouldCharge = electricPrice <= petrolPrice;
+  const settings = useMemo(
+    () => ({
+      petrol,
+      batterySize,
+      electricDistance,
+      liter,
+    }),
+    [petrol, batterySize, electricDistance, liter]
+  );
+
+  const saveSettings = useCallback(() => {
+    localStorage.setItem("settings", JSON.stringify(settings));
+    setIsSaving(false);
+  }, [settings]);
+  const debouncedSaveSettings = useCallback(debounce(saveSettings, 2000), [
+    saveSettings,
+  ]);
+
+  const restoreSettings = () => {
+    const savedSettings = localStorage.getItem("settings");
+    if (!savedSettings) return;
+    const settings = JSON.parse(savedSettings);
+    setPetrol(settings.petrol);
+    setBatterySize(settings.batterySize);
+    setElectricDistance(settings.electricDistance);
+    setLiter(settings.liter);
+  };
+
+  const handleChange = (e: any, callback: Function) => {
+    setIsSaving(true);
+    callback(e.target.valueAsNumber);
+  };
+
+  useEffect(() => {
+    debouncedSaveSettings();
+  }, [settings, debouncedSaveSettings]);
+
+  useEffect(() => {
+    restoreSettings();
+  }, []);
 
   return (
     <div>
@@ -23,14 +64,10 @@ const Home = ({ price }: { price: number }) => {
 
       <main
         style={{
-          display: "flex",
-          flexDirection: "column",
-          minHeight: "100vh",
-          flexGrow: 1,
-          alignItems: "center",
-          justifyContent: "center",
           maxWidth: "50em",
           margin: "auto",
+          marginTop: "1em",
+          textAlign: "center",
         }}
       >
         <div>
@@ -47,26 +84,26 @@ const Home = ({ price }: { price: number }) => {
           <input
             type="number"
             value={petrol}
-            onChange={(e) => setPetrol(e.target.valueAsNumber)}
+            onChange={(e) => handleChange(e, setPetrol)}
           />
           <label>Km/Liter</label>
           <input
             type="number"
             value={liter}
-            onChange={(e) => setLiter(e.target.valueAsNumber)}
+            onChange={(e) => handleChange(e, setLiter)}
           />
-
+          <hr />
           <label>Battery size</label>
           <input
             type="number"
             value={batterySize}
-            onChange={(e) => setBatterySize(e.target.valueAsNumber)}
+            onChange={(e) => handleChange(e, setBatterySize)}
           />
           <label>Electric distance</label>
           <input
             type="number"
             value={electricDistance}
-            onChange={(e) => setElectricDistance(e.target.valueAsNumber)}
+            onChange={(e) => handleChange(e, setElectricDistance)}
           />
           <p
             style={{
@@ -108,6 +145,12 @@ const Home = ({ price }: { price: number }) => {
         >
           <p>Elpris: {electricPrice}</p>
           <p>Benzinpris: {petrolPrice}</p>
+        </div>
+        <hr />
+        <div>
+          <p style={{ fontSize: "1.5em" }}>
+            {isSaving ? "Saving..." : "Saved"}
+          </p>
         </div>
       </main>
     </div>
