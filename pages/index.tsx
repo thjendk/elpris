@@ -166,7 +166,7 @@ export const getServerSideProps = async () => {
   const prices = data.result.records.map((r: any) => ({
     ...r,
     time: new Date(r.HourUTC),
-    price: (r.SpotPriceDKK / 1000) * 100,
+    price: ((r.SpotPriceDKK || r.SpotPriceEUR * 7.44) / 1000) * 100,
   }));
   const today = prices.find((p: any) => isSameHour(p.time, new Date()));
 
