@@ -12,8 +12,10 @@ import Head from "next/head";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { round, debounce, meanBy, min } from "lodash";
 import InputElement from "../components/InputElement";
+import { useRouter } from "next/router";
 
 const Home = ({ prices }: { prices: any }) => {
+  const router = useRouter();
   const [petrol, setPetrol] = useState(14.5);
   const [batterySize, setBatterySize] = useState(10);
   const [electricDistance, setElectricDistance] = useState(30);
@@ -28,13 +30,13 @@ const Home = ({ prices }: { prices: any }) => {
     end: endOfTomorrow(),
   }).map((d) => ({
     start: d,
-    end: addHours(d, chargeHours),
+    end: addHours(d, chargeHours || 1),
     price: round(
       meanBy(
         prices.filter((p: any) =>
           isWithinInterval(parseISO(p.time), {
             start: d,
-            end: addHours(d, chargeHours),
+            end: addHours(d, chargeHours || 1),
           })
         ),
         (p: any) => p.price
@@ -168,7 +170,14 @@ const Home = ({ prices }: { prices: any }) => {
                     isLowestPrice ? "bg-green-300 font-bold" : ""
                   } ${priceIsTooDamnMuch ? "bg-red-500" : ""}`}
                 >
-                  <td>{p.start.toLocaleString()}</td>
+                  <td
+                    className="hover:underline cursor-pointer"
+                    onClick={() =>
+                      router.push("/time/" + p.start.toISOString())
+                    }
+                  >
+                    {p.start.toLocaleString()}
+                  </td>
                   <td>{p.end.toLocaleTimeString()}</td>
                   <td>{p.price.toFixed(2)}</td>
                 </tr>
