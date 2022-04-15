@@ -148,13 +148,14 @@ const Home = ({ prices }: { prices: any }) => {
                     .filter((a) => isSameDay(p.start, a.start))
                     .map((a) => a.price)
                 );
+              const priceIsTooDamnMuch = p.price / kmkwh > petrolPrice;
 
               return (
                 <tr
                   key={p.start.toISOString()}
                   className={`border-t border-gray-400 ${
                     isLowestPrice ? "bg-green-300 font-bold" : ""
-                  }`}
+                  } ${priceIsTooDamnMuch ? "bg-red-500" : ""}`}
                 >
                   <td>{p.start.toLocaleString()}</td>
                   <td>{p.end.toLocaleTimeString()}</td>
