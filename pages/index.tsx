@@ -52,8 +52,9 @@ const Home = ({ prices }: { prices: any }) => {
       batterySize,
       electricDistance,
       liter,
+      chargeHours,
     }),
-    [petrol, batterySize, electricDistance, liter]
+    [petrol, batterySize, electricDistance, liter, chargeHours]
   );
 
   const saveSettings = useCallback(() => {
@@ -72,6 +73,7 @@ const Home = ({ prices }: { prices: any }) => {
     setBatterySize(settings.batterySize);
     setElectricDistance(settings.electricDistance);
     setLiter(settings.liter);
+    setChargeHours(settings.chargeHours);
   };
 
   const handleChange = (e: any, callback: Function) => {
