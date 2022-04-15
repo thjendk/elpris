@@ -95,7 +95,7 @@ const Home = ({ prices }: { prices: any }) => {
         <p className="text-2xl font-bold">
           Spotpris: {today.price.toFixed(2)} kr/kwh
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2">
+        <div className="grid grid-cols-2">
           <InputElement
             value={petrol}
             onChange={(e) => handleChange(e, setPetrol)}
