@@ -5,6 +5,7 @@ import {
   differenceInHours,
   subHours,
   eachHourOfInterval,
+  startOfToday,
 } from "date-fns";
 import { meanBy, round, min } from "lodash";
 import { useRouter } from "next/router";
@@ -45,10 +46,16 @@ const Time = ({ prices }: { prices: any }) => {
         onChange={(e) => setHours(e.target.valueAsNumber)}
         label="Hours"
       />
+      <button
+        onClick={() => router.push("/")}
+        className="w-full border border-gray-400 rounded p-1 hover:underline"
+      >
+        Home
+      </button>
       <div className="grid grid-cols-2">
         <button
           onClick={() => router.push("/time/" + subHours(now, 1).toISOString())}
-          className="border border-gray-400 rounded p-1 m-1 hover:underline"
+          className="border border-gray-400 rounded p-1 my-1 hover:underline"
         >
           Previous
         </button>
@@ -94,8 +101,8 @@ export default Time;
 
 export const getStaticPaths = async () => {
   const hours = eachHourOfInterval({
-    start: new Date(),
-    end: addHours(new Date(), 24),
+    start: startOfToday(),
+    end: addHours(startOfToday(), 24),
   });
   const paths = hours.map((h) => ({
     params: { time: h.toISOString() },
