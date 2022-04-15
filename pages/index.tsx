@@ -14,6 +14,12 @@ import { round, debounce, meanBy, min } from "lodash";
 import InputElement from "../components/InputElement";
 
 const Home = ({ prices }: { prices: any }) => {
+  const [petrol, setPetrol] = useState(14.5);
+  const [batterySize, setBatterySize] = useState(10);
+  const [electricDistance, setElectricDistance] = useState(30);
+  const [liter, setLiter] = useState(11.6);
+  const [chargeHours, setChargeHours] = useState(8);
+  const [isSaving, setIsSaving] = useState(false);
   const today = prices.find((p: any) =>
     isSameHour(parseISO(p.time), new Date())
   );
@@ -22,22 +28,20 @@ const Home = ({ prices }: { prices: any }) => {
     end: endOfTomorrow(),
   }).map((d) => ({
     start: d,
-    end: addHours(d, 8),
+    end: addHours(d, chargeHours),
     price: round(
       meanBy(
         prices.filter((p: any) =>
-          isWithinInterval(parseISO(p.time), { start: d, end: addHours(d, 8) })
+          isWithinInterval(parseISO(p.time), {
+            start: d,
+            end: addHours(d, chargeHours),
+          })
         ),
         (p: any) => p.price
       ),
       2
     ),
   }));
-  const [petrol, setPetrol] = useState(14.5);
-  const [batterySize, setBatterySize] = useState(10);
-  const [electricDistance, setElectricDistance] = useState(30);
-  const [liter, setLiter] = useState(11.6);
-  const [isSaving, setIsSaving] = useState(false);
   const kmkwh = electricDistance / batterySize;
   const electricPrice = round(today.price / kmkwh, 2);
   const petrolPrice = round(petrol / liter, 2);
@@ -115,6 +119,11 @@ const Home = ({ prices }: { prices: any }) => {
             value={electricDistance}
             onChange={(e) => handleChange(e, setElectricDistance)}
             label="Electric distance"
+          />
+          <InputElement
+            value={chargeHours}
+            onChange={(e) => handleChange(e, setChargeHours)}
+            label="Charging hours"
           />
         </div>
         <p className="text-xl font-bold my-2">Km/Kwh: {round(kmkwh)}</p>
