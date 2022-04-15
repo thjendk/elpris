@@ -4,6 +4,7 @@ import {
   addHours,
   differenceInHours,
   subHours,
+  eachHourOfInterval,
 } from "date-fns";
 import { meanBy, round, min } from "lodash";
 import { useRouter } from "next/router";
@@ -91,7 +92,19 @@ const Time = ({ prices }: { prices: any }) => {
 
 export default Time;
 
-export const getServerSideProps = async () => {
+export const getStaticPaths = async () => {
+  const hours = eachHourOfInterval({
+    start: new Date(),
+    end: addHours(new Date(), 24),
+  });
+  const paths = hours.map((h) => ({
+    params: { time: h.toISOString() },
+  }));
+
+  return { paths, fallback: "blocking" };
+};
+
+export const getStaticProps = async () => {
   const data = await fetch(
     "https://api.energidataservice.dk/datastore_search?resource_id=elspotprices&sort=HourDK%20desc&filters={%22PriceArea%22:%22DK1%22}"
   ).then((res) => res.json());
@@ -105,5 +118,6 @@ export const getServerSideProps = async () => {
     props: {
       prices: JSON.parse(JSON.stringify(prices)),
     },
+    revalidate: 60,
   };
 };

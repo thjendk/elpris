@@ -192,7 +192,7 @@ const Home = ({ prices }: { prices: any }) => {
 
 export default Home;
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const data = await fetch(
     "https://api.energidataservice.dk/datastore_search?resource_id=elspotprices&sort=HourDK%20desc&filters={%22PriceArea%22:%22DK1%22}"
   ).then((res) => res.json());
@@ -206,5 +206,6 @@ export const getServerSideProps = async () => {
     props: {
       prices: JSON.parse(JSON.stringify(prices)),
     },
+    revalidate: 60,
   };
 };
