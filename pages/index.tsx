@@ -130,7 +130,9 @@ const Home = ({ prices }: { prices: any }) => {
             label="Charging hours"
           />
         </div>
-        <p className="text-xl font-bold my-2">Km/Kwh: {round(kmkwh)}</p>
+        <p className="text-xl font-bold my-2">
+          Km/Kwh: {round(kmkwh, 2).toFixed(2)}
+        </p>
         <div>
           {shouldCharge ? (
             <p className="py-2 text-xl font-bold text-white bg-green-600 my-2">
@@ -143,8 +145,12 @@ const Home = ({ prices }: { prices: any }) => {
           )}
         </div>
         <div className="border my-2">
-          <p className="text-xl font-bold">Elpris: {electricPrice} kr/km</p>
-          <p className="text-xl font-bold">Benzinpris: {petrolPrice} kr/km</p>
+          <p className="text-xl font-bold">
+            Elpris: {electricPrice.toFixed(2)} kr/km
+          </p>
+          <p className="text-xl font-bold">
+            Benzinpris: {petrolPrice.toFixed(2)} kr/km
+          </p>
         </div>
         <table className="w-full border-y border-gray-400">
           <thead>
