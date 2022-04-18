@@ -28,22 +28,27 @@ const Home = ({ prices }: { prices: any }) => {
   const meanPrices = eachHourOfInterval({
     start: startOfToday(),
     end: endOfTomorrow(),
-  }).map((d) => ({
-    start: d,
-    end: addHours(d, chargeHours || 1),
-    price: round(
-      meanBy(
-        prices.filter((p: any) =>
-          isWithinInterval(parseISO(p.time), {
-            start: d,
-            end: addHours(d, chargeHours || 1),
-          })
-        ),
-        (p: any) => p.price
-      ),
-      2
-    ),
-  }));
+  }).map((d) => {
+    const filteredPrices = prices.filter((p: any) =>
+      isWithinInterval(parseISO(p.time), {
+        start: d,
+        end: addHours(d, chargeHours || 1),
+      })
+    );
+    const price =
+      filteredPrices.length === chargeHours + 1
+        ? round(
+            meanBy(filteredPrices, (p: any) => p.price),
+            2
+          )
+        : NaN;
+
+    return {
+      start: d,
+      end: addHours(d, chargeHours || 1),
+      price,
+    };
+  });
   const kmkwh = electricDistance / batterySize;
   const electricPrice = round(today.price / kmkwh, 2);
   const petrolPrice = round(petrol / liter, 2);
