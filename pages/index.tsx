@@ -1,5 +1,4 @@
 import {
-  addHours,
   eachHourOfInterval,
   isSameDay,
   isSameHour,
@@ -7,6 +6,7 @@ import {
   isWithinInterval,
   parseISO,
   startOfToday,
+  addMinutes,
 } from "date-fns";
 import Head from "next/head";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -29,14 +29,15 @@ const Home = ({ prices }: { prices: any }) => {
     start: startOfToday(),
     end: endOfTomorrow(),
   }).map((d) => {
+    const end = addMinutes(d, chargeHours * 60 - 1 || 59);
     const filteredPrices = prices.filter((p: any) =>
       isWithinInterval(parseISO(p.time), {
         start: d,
-        end: addHours(d, chargeHours || 1),
+        end,
       })
     );
     const price =
-      filteredPrices.length === chargeHours + 1
+      filteredPrices.length === chargeHours
         ? round(
             meanBy(filteredPrices, (p: any) => p.price),
             2
@@ -45,7 +46,7 @@ const Home = ({ prices }: { prices: any }) => {
 
     return {
       start: d,
-      end: addHours(d, chargeHours || 1),
+      end: addMinutes(end, 1),
       price,
     };
   });

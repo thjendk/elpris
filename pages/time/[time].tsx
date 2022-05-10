@@ -6,6 +6,7 @@ import {
   subHours,
   eachHourOfInterval,
   startOfToday,
+  addMinutes,
 } from "date-fns";
 import { meanBy, round, min } from "lodash";
 import { useRouter } from "next/router";
@@ -19,23 +20,26 @@ const Time = ({ prices }: { prices: any }) => {
   const now = parseISO(time);
   const meanPrices = [...Array(hours || 1)].map((d, i) => {
     const start = now;
-    const end = addHours(start, i + 1);
+    const end = addMinutes(start, (i + 1) * 60 - 1);
+    const filteredPrices = prices.filter((p: any) =>
+      isWithinInterval(parseISO(p.time), {
+        start,
+        end,
+      })
+    );
+
+    const price =
+      filteredPrices.length === i + 1
+        ? round(
+            meanBy(filteredPrices, (p: any) => p.price),
+            2
+          )
+        : NaN;
 
     return {
       start,
-      end,
-      price: round(
-        meanBy(
-          prices.filter((p: any) =>
-            isWithinInterval(parseISO(p.time), {
-              start,
-              end,
-            })
-          ),
-          (p: any) => p.price
-        ),
-        2
-      ),
+      end: addMinutes(end, 1),
+      price,
     };
   });
 
