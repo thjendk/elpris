@@ -22,7 +22,7 @@ const Home = ({ prices }: { prices: any }) => {
   const [liter, setLiter] = useState(11.6);
   const [chargeHours, setChargeHours] = useState(8);
   const [isSaving, setIsSaving] = useState(false);
-  const today = prices.find((p: any) =>
+  const today: any = prices.find((p: any) =>
     isSameHour(parseISO(p.time), new Date())
   );
   const meanPrices = eachHourOfInterval({
@@ -51,7 +51,7 @@ const Home = ({ prices }: { prices: any }) => {
     };
   });
   const kmkwh = electricDistance / batterySize;
-  const electricPrice = round(today.price / kmkwh, 2);
+  const electricPrice = round(today?.price / kmkwh, 2);
   const petrolPrice = round(petrol / liter, 2);
   const shouldCharge = electricPrice <= petrolPrice;
   const settings = useMemo(
@@ -107,7 +107,7 @@ const Home = ({ prices }: { prices: any }) => {
 
       <main className="max-w-xl m-auto text-center my-2">
         <p className="text-2xl font-bold">
-          Spotpris: {today.price.toFixed(2)} kr/kwh
+          Spotpris: {today?.price.toFixed(2)} kr/kwh
         </p>
         <div className="grid grid-cols-2">
           <InputElement
